@@ -60,7 +60,7 @@ return [
 
         'single' => [
             'driver' => 'single',
-            'path' => storage_path('logs/laravel.log'),
+            'path' => env('LOG_PATH', storage_path('logs')) . '/' . gethostname() . '-app.log',
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
         ],
