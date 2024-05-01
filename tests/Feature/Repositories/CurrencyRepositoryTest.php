@@ -4,6 +4,7 @@ namespace Tests\Feature\Repositories;
 
 use App\Models\CurrencyRate;
 use App\Repositories\CurrencyRepository;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Redis\Connections\Connection;
 use Illuminate\Support\Facades\Redis;
@@ -54,19 +55,20 @@ class CurrencyRepositoryTest extends TestCase
     }
 
     #[Test]
-    #[TestDox('測試 cache 和 db 都沒有資料，回傳空陣列')]
-    public function shouldReturnEmptyArrayWhenDataNotFoundInCacheAndDB(): void
+    #[TestDox('測試 cache 和 db 都沒有資料，拋出例外')]
+    public function shouldThrowNotFoundExceptionWhenDataNotFoundInCacheAndDB(): void
     {
         // Arrange
         $expected = [];
 
+        $this->expectException(ModelNotFoundException::class);
+
         // Act
         /** @var CurrencyRepository $target */
         $target = $this->app->make(CurrencyRepository::class);
-        $actual = $target->getCodeList();
+        $target->getCodeList();
 
         // Assert
-        self::assertSame($expected, $actual);
         self::assertSame($expected, $this->redis->smembers('currency_code_list'));
     }
 

@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\CurrencyRate;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Redis\Connections\Connection;
 
 class CurrencyRepository
@@ -13,6 +14,9 @@ class CurrencyRepository
     {
     }
 
+    /**
+     * @throws ModelNotFoundException
+     */
     public function getCodeList(): array
     {
         $cacheList = $this->redis->smembers($this->cacheKey);
@@ -26,7 +30,7 @@ class CurrencyRepository
             ->toArray();
 
         if (empty($list)) {
-            return $list;
+            throw new ModelNotFoundException();
         }
 
         $this->redis->sadd($this->cacheKey, ...$list);
