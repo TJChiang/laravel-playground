@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Currency;
+use App\Models\CurrencyRate;
 use Illuminate\Redis\Connections\Connection;
 
 class CurrencyRepository
@@ -20,7 +20,11 @@ class CurrencyRepository
             return $cacheList;
         }
 
-        $list = Currency::orderBy('id', 'asc')->get(['id', 'code'])->map(fn ($entity) => $entity['code'])->toArray();
+        $list = CurrencyRate::orderBy('id', 'asc')
+            ->get(['id', 'currency_code'])
+            ->map(fn ($entity) => $entity['currency_code'])
+            ->toArray();
+
         if (empty($list)) {
             return $list;
         }

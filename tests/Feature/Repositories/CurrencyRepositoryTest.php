@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Repositories;
 
-use App\Models\Currency;
+use App\Models\CurrencyRate;
 use App\Repositories\CurrencyRepository;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Redis\Connections\Connection;
@@ -80,9 +80,9 @@ class CurrencyRepositoryTest extends TestCase
             'TWD',
         ];
 
-        Currency::factory(2)->sequence(
-            ['code' => 'USD'],
-            ['code' => 'TWD']
+        CurrencyRate::factory(2)->sequence(
+            ['currency_code' => 'USD'],
+            ['currency_code' => 'TWD']
         )->create();
 
         // Act
@@ -93,11 +93,11 @@ class CurrencyRepositoryTest extends TestCase
         // Assert
         self::assertSame($expected, $actual);
         self::assertSame($expected, $this->redis->smembers('currency_code_list'));
-        self::assertDatabaseHas(Currency::class, [
-            'code' => 'USD',
+        self::assertDatabaseHas(CurrencyRate::class, [
+            'currency_code' => 'USD',
         ], config('database.default'));
-        self::assertDatabaseHas(Currency::class, [
-            'code' => 'TWD',
+        self::assertDatabaseHas(CurrencyRate::class, [
+            'currency_code' => 'TWD',
         ], config('database.default'));
     }
 }

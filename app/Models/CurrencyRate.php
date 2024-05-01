@@ -20,6 +20,7 @@ class CurrencyRate extends Model
 
     protected $table = 'currency_rates';
     protected $primaryKey = 'id';
+    public const CREATED_AT = null;
     protected $fillable = [
         'currency_code',
         'TWD_rate',
