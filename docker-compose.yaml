@@ -1,0 +1,84 @@
+services:
+  nginx:
+    image: nginx:1.25
+    restart: always
+    environment:
+      TZ: Asia/Taipei
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./storage/logs/nginx:/var/log/nginx
+    ports:
+      - "8000:80"
+    logging:
+      driver: "none"
+    networks:
+      - server
+
+  laravel-app:
+    init: true
+    build: .
+    environment:
+      TZ: Asia/Taipei
+    working_dir: /source
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/source:delegated
+    networks:
+      - server
+
+  database:
+    image: mysql:8.0.33
+    environment:
+      MYSQL_ROOT_USER: ${DB_USERNAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: laravel_user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: laravel
+      TZ: Asia/Taipei
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - laravel-playground-db-data:/var/lib/mysql
+    healthcheck:
+      test: mysqladmin ping --password=pass
+      start_period: 10s
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7.2
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: redis-cli ping
+      start_period: 10s
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  mongodb:
+    image: mongo:7.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      TZ: Asia/Taipei
+    volumes:
+      - laravel-playground-mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: mongosh --eval 'db.runCommand("ping").ok' 127.0.0.1:27017/test --quiet
+      start_period: 10s
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+networks:
+  server:
+    name: laravel-default-net
+
+volumes:
+  laravel-playground-db-data:
+  laravel-playground-mongo-data:
