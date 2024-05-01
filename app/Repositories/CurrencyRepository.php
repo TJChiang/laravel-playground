@@ -37,4 +37,12 @@ class CurrencyRepository
         $this->redis->expire($this->cacheKey, $this->ttl);
         return $list;
     }
+
+    /**
+     * @throws ModelNotFoundException
+     */
+    public function getRatesByCode(string $code): CurrencyRate
+    {
+        return CurrencyRate::where('currency_code', $code)->firstOrFail();
+    }
 }
