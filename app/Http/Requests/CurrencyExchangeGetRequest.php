@@ -3,10 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Rules\CurrencyCodeRule;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
-class CurrencyExchangeGetRequest extends FormRequest
+class CurrencyExchangeGetRequest extends BaseRequest
 {
     protected function prepareForValidation(): void
     {
