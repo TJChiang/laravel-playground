@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id()->primary();
             $table->string('code',5)->unique();
             $table->string('name', 100);
-            $table->string('country', 100);
             $table->string('number', 5);
         });
     }
