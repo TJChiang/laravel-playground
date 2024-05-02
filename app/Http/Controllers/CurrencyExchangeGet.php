@@ -7,6 +7,7 @@ use App\Http\Requests\CurrencyExchangeGetRequest as Request;
 use App\Http\Resources\CurrencyExchangeGetResource;
 use App\Services\CurrencyExchangeService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use InvalidArgumentException;
 
 class CurrencyExchangeGet
 {
@@ -21,7 +22,7 @@ class CurrencyExchangeGet
 
         try {
             $result = $currencyExchangeService->exchangeRate($source, $target, $amount);
-        } catch (ModelNotFoundException) {
+        } catch (ModelNotFoundException | InvalidArgumentException) {
             throw new NotFoundException('Currency code unrecognized.');
         }
 
