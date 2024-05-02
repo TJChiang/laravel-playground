@@ -24,6 +24,7 @@ class CurrencyRepositoryTest extends TestCase
     {
         parent::setUp();
         $this->redis = Redis::connection('currency_list');
+        $this->redis->flushdb();
     }
 
     protected function tearDown(): void

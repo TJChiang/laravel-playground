@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Services;
 
-use App\Services\CurrencyService;
+use App\Services\CurrencyExchangeService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -10,8 +10,8 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
-#[CoversClass(CurrencyService::class)]
-class CurrencyServiceTest extends TestCase
+#[CoversClass(CurrencyExchangeService::class)]
+class CurrencyExchangeServiceTest extends TestCase
 {
     #[Test]
     #[TestDox('測試貨幣代碼不存在，拋出例外')]
@@ -25,8 +25,8 @@ class CurrencyServiceTest extends TestCase
         $this->expectException(ModelNotFoundException::class);
 
         // Act
-        /** @var CurrencyService $target */
-        $target = $this->app->make(CurrencyService::class);
+        /** @var CurrencyExchangeService $target */
+        $target = $this->app->make(CurrencyExchangeService::class);
         $target->exchangeRate($sourceCode, $targetCode, $amount);
     }
 

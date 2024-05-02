@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Repositories\CurrencyRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class CurrencyService
+class CurrencyExchangeService
 {
     public function __construct(protected CurrencyRepository $currencyRepository)
     {}

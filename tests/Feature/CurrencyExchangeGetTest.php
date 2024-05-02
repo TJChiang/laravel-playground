@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Http\Controllers\CurrencyExchangeGet;
 use App\Models\CurrencyRate;
-use App\Services\CurrencyService;
+use App\Services\CurrencyExchangeService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -109,7 +109,7 @@ class CurrencyExchangeGetTest extends TestCase
             ['currency_code' => 'JPY']
         )->create();
 
-        $mockService = $this->mock(CurrencyService::class);
+        $mockService = $this->mock(CurrencyExchangeService::class);
         $mockService->shouldReceive('exchangeRate')
             ->with($source, $target, '12332.23')
             ->once()
@@ -142,7 +142,7 @@ class CurrencyExchangeGetTest extends TestCase
             ['currency_code' => 'JPY']
         )->create();
 
-        $this->mock(CurrencyService::class)
+        $this->mock(CurrencyExchangeService::class)
             ->shouldReceive('exchangeRate')
             ->with($source, $target, '12332.23')
             ->once()
