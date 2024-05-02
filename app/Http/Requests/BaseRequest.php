@@ -11,7 +11,7 @@ class BaseRequest extends FormRequest
     /**
      * @throws InvalidArgumentException
      */
-    protected function failedValidation(Validator $validator)
+    protected function failedValidation(Validator $validator): void
     {
         foreach ($validator->errors()->messages() as $field => $msgBag) {
             foreach ($msgBag as $msg) {
