@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -29,6 +28,7 @@ class CurrencySeeder extends Seeder
             ];
         }
 
-        DB::table('currencies')->insert(array_values($data));
+        DB::connection('laravel')->table('currencies')->insert(array_values($data));
+        DB::connection('laravel_test')->table('currencies')->insert(array_values($data));
     }
 }
