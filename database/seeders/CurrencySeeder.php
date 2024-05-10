@@ -28,7 +28,7 @@ class CurrencySeeder extends Seeder
             ];
         }
 
-        DB::connection('laravel')->table('currencies')->insert(array_values($data));
-        DB::connection('laravel_test')->table('currencies')->insert(array_values($data));
+        DB::connection('mysql')->table('currencies')->insert(array_values($data));
+        DB::connection('mysql_test')->table('currencies')->insert(array_values($data));
     }
 }

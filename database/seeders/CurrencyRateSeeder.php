@@ -27,7 +27,7 @@ class CurrencyRateSeeder extends Seeder
                 'USD_rate' => 1,
             ],
         ];
-        DB::connection('laravel')->table('currency_rates')->insert($data);
-        DB::connection('laravel_test')->table('currency_rates')->insert($data);
+        DB::connection('mysql')->table('currency_rates')->insert($data);
+        DB::connection('mysql_test')->table('currency_rates')->insert($data);
     }
 }
