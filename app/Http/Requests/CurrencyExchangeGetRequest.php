@@ -7,19 +7,6 @@ use Illuminate\Support\Str;
 
 class CurrencyExchangeGetRequest extends BaseRequest
 {
-    protected function prepareForValidation(): void
-    {
-        $amount = $this->input('amount');
-        if (is_string($amount)) {
-            $this->offsetSet('amount', Str::remove(',', $amount));
-        }
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
@@ -37,10 +24,16 @@ class CurrencyExchangeGetRequest extends BaseRequest
             ],
             'amount' => [
                 'required',
-                'numeric',
-                'regex:/^\d+(\.\d{1,2})?$/',
-                'min:0',
+                'regex:/^(?!0\d)(?:\d{1,3}(?:,\d{3})+|\d+)?(?:\.\d{1,2})?$/',
             ],
         ];
+    }
+
+    protected function passedValidation(): void
+    {
+        $amount = $this->input('amount');
+        if (is_string($amount)) {
+            $this->offsetSet('amount', Str::remove(',', $amount));
+        }
     }
 }

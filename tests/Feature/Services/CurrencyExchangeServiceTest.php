@@ -5,6 +5,7 @@ namespace Tests\Feature\Services;
 use App\Models\CurrencyRate;
 use App\Repositories\CurrencyRepository;
 use App\Services\CurrencyExchangeService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -16,19 +17,22 @@ use Tests\TestCase;
 class CurrencyExchangeServiceTest extends TestCase
 {
     #[Test]
-    #[TestDox('測試貨幣代碼不存在，拋出例外')]
-    #[DataProvider('provideInvalidCurrencyCode')]
-    public function shouldThrowExceptionIfSourceOrTargetNotFound(string $sourceCode, string $targetCode): void
+    #[TestDox('測試來源貨幣代碼不存在，拋出例外')]
+    public function shouldThrowExceptionIfSourceCodeNotFound(): void
     {
         // Arrange
         $amount = 123456;
+        $sourceCode = 'TWD';
+        $targetCode = 'JPY';
 
         // Assert
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ModelNotFoundException::class);
 
-        $mockRepository = $this->mock(CurrencyRepository::class);
-        $mockRepository->shouldReceive('getCodeList')->andReturn(['TWD']);
-        $mockRepository->shouldReceive('getRatesByCode')->never();
+        $this->mock(CurrencyRepository::class)
+            ->shouldReceive('getRatesByCode')
+            ->with($sourceCode)
+            ->once()
+            ->andThrow(ModelNotFoundException::class);
 
         // Act
         /** @var CurrencyExchangeService $target */
@@ -36,39 +40,30 @@ class CurrencyExchangeServiceTest extends TestCase
         $target->exchangeRate($sourceCode, $targetCode, $amount);
     }
 
-    public static function provideInvalidCurrencyCode(): iterable
-    {
-        yield '來源貨幣代碼不存在' => ['INVALID', 'TWD'];
-        yield '目標貨幣代碼不存在' => ['TWD', 'INVALID'];
-    }
-
     #[Test]
-    #[TestDox('測試貨幣數字不存在，拋出例外')]
-    #[DataProvider('provideInvalidCurrencyAmount')]
-    public function shouldThrowExceptionIfAmountAreInvalid($amount): void
+    #[TestDox('測試目標貨幣匯率不存在，拋出例外')]
+    public function shouldThrowExceptionIfTargetRateNotFound(): void
     {
         // Arrange
+        $amount = 123456;
         $sourceCode = 'TWD';
-        $targetCode = 'JPY';
+        $targetCode = 'RMB';
 
         // Assert
         $this->expectException(InvalidArgumentException::class);
 
         $this->mock(CurrencyRepository::class)
-            ->shouldReceive('getCodeList')
-            ->twice()
-            ->andReturn(['TWD', 'JPY']);
+            ->shouldReceive('getRatesByCode')
+            ->with($sourceCode)
+            ->once()
+            ->andReturn(CurrencyRate::factory()->make([
+                'currency_code' => $sourceCode,
+            ]));
 
         // Act
         /** @var CurrencyExchangeService $target */
         $target = $this->app->make(CurrencyExchangeService::class);
         $target->exchangeRate($sourceCode, $targetCode, $amount);
-    }
-
-    public static function provideInvalidCurrencyAmount(): iterable
-    {
-        yield 'amount 是字串' => ['whatever'];
-        yield 'amount 小數點太長' => ['12312.123'];
     }
 
     #[Test]
@@ -81,11 +76,8 @@ class CurrencyExchangeServiceTest extends TestCase
         $targetCode = 'JPY';
         $rate = 3.21234;
 
-        $mockRepository = $this->mock(CurrencyRepository::class);
-        $mockRepository->shouldReceive('getCodeList')
-            ->twice()
-            ->andReturn(['TWD', 'JPY']);
-        $mockRepository->shouldReceive('getRatesByCode')
+        $this->mock(CurrencyRepository::class)
+            ->shouldReceive('getRatesByCode')
             ->with($sourceCode)
             ->once()
             ->andReturn(CurrencyRate::factory()->make([
